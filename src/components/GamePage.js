@@ -9,13 +9,8 @@ import Board from "./Board";
 export default function GamePage(props) {
   const [xIsNext, setXIsNext] = useState(true);
   const [stepNumber, setStepNumber] = useState(0);
-  const [history, setHistory] = useState([
-    {
-      squares: Array(9).fill(null)
-    }
-  ]);
-
   const [highScores, setHighScores] = useState([]);
+  const [history, setHistory] = useState([{ squares: Array(9).fill(null) }]);
 
   const fetchScores = async () => {
     try {
@@ -54,7 +49,7 @@ export default function GamePage(props) {
   };
 
   useEffect(() => {
-    // fetchScores();
+    fetchScores();
   }, []);
 
   const handleClick = i => {
@@ -105,7 +100,7 @@ export default function GamePage(props) {
           handleClick={handleClick}
         />
       </div>
-      <div className="col-md-4">
+      <div className="col-md-4 h-90 d-flex flex-column">
         <div className="game-info">
           <div>{status}</div>
           <ol>{moves}</ol>

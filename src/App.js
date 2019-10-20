@@ -43,7 +43,7 @@ export default function App() {
   return (
     <div className="d-flex flex-column h-100">
       <Navbar currentUser={currentUser} onSignOut={onSignOut}/>
-      <div className="container d-flex flex-column justify-content-center">
+      <div className="container d-flex flex-column justify-content-center  mt-2">
         {renderAppropriateScreen()}
       </div>
     </div>

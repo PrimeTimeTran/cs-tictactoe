@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Square = ({ value, onClick }) => (
-  <button className="square" onClick={() => onClick(value)}>
+  <button className={`square ${value}`} onClick={() => onClick(value)}>
     {value}
   </button>
 );
