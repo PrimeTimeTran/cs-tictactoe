@@ -2,36 +2,40 @@ import React, { useState, useEffect } from "react";
 
 import { CSSTransitionGroup } from "react-transition-group";
 
+import { calculateWinner } from "../utils";
+
 import Board from "./Board";
 
 export default function GamePage(props) {
+  const [xIsNext, setXIsNext] = useState(true);
+  const [stepNumber, setStepNumber] = useState(0);
+  const [history, setHistory] = useState([
+    {
+      squares: Array(9).fill(null)
+    }
+  ]);
+
   const [highScores, setHighScores] = useState([]);
-  const [gameOver, setGameOver] = useState(false);
-  const [error, setError] = useState(false);
 
   const fetchScores = async () => {
     try {
       const response = await fetch(
-        " http://ftw-highscores.herokuapp.com/tictactoe-dev"
+        "https://ftw-highscores.herokuapp.com/tictactoe-dev"
       );
       const data = await response.json();
-      setHighScores(highScores.concat(data.items));
+      setHighScores(data.items);
     } catch (error) {
-      setError(true);
+      console.log("Error", error);
     }
   };
-
-  useEffect(() => {
-    fetchScores();
-  }, []);
 
   const postGameScore = async () => {
     let data = new URLSearchParams();
 
-    data.append("player", props.currentUser || "Anonymous");
-    data.append("score", -1559744884);
+    data.append("player", props.currentUser.name || "Anonymous");
+    data.append("score", -1565775172357);
 
-    const url = `http://ftw-highscores.herokuapp.com/tictactoe-dev`;
+    const url = `https://ftw-highscores.herokuapp.com/tictactoe-dev`;
     const config = {
       json: true,
       method: "POST",
@@ -41,43 +45,77 @@ export default function GamePage(props) {
       }
     };
     const response = await fetch(url, config);
-
-    if (response.status === 200) {
-      fetchScores();
-    }
+    const gogo = await response.json();
   };
 
   const removeOneScore = id => {
-    const newScores = highScores.filter(score => {
-      return score._id !== id;
-    });
+    const newScores = highScores.filter(score => score._id !== id);
     setHighScores(newScores);
   };
 
-  return (
-    <div className="bg-secondary h-100 d-flex flex-column justify-content-center align-items-center">
-      <div className="d-flex flex-column">
-        <h1>{props.currentUser.name}</h1>
+  useEffect(() => {
+    // fetchScores();
+  }, []);
 
-        <div className="game-board">
-          <Board someoneWon={postGameScore} isGameOver={gameOver} />
-        </div>
+  const handleClick = i => {
+    let newHistory = history.slice(0, stepNumber + 1);
+    let current = newHistory[newHistory.length - 1];
+    let squares = current.squares.slice();
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+    squares[i] = xIsNext ? "X" : "O";
+    setHistory(newHistory.concat([{ squares: squares }]));
+    setStepNumber(newHistory.length);
+    setXIsNext(!xIsNext);
+  };
+
+  const moves = history.map((step, move) => {
+    const desc = move ? "Go to move #" + move : "Go to game start";
+    return (
+      <li key={move}>
+        <button onClick={() => jumpTo(move)}>{desc}</button>
+      </li>
+    );
+  });
+
+  const jumpTo = step => {
+    setStepNumber(step);
+    setXIsNext(step % 2 === 0);
+  };
+
+  const current = history[stepNumber];
+
+  const winner = calculateWinner(current.squares);
+
+  let status;
+  if (winner) {
+    status = "Winner: " + winner;
+  } else {
+    status = "Next player: " + (xIsNext ? "X" : "O");
+  }
+
+  return (
+    <div className="row">
+      <div className="col-md-8">
+        <h1>{props.currentUser.name}</h1>
+        <Board
+          squares={current.squares}
+          someoneWon={postGameScore}
+          handleClick={handleClick}
+        />
+      </div>
+      <div className="col-md-4">
         <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
+          <div>{status}</div>
+          <ol>{moves}</ol>
         </div>
-        <button className="btn btn-primary btn-lg" onClick={postGameScore}>
-          Post Score
-        </button>
-        <button className="btn btn-danger" onClick={props.onSignOut}>
-          Sign Out
-        </button>
-        <ul>
-          <CSSTransitionGroup
-            transitionName="example"
-            transitionEnterTimeout={500}
-            transitionLeaveTimeout={300}
-          >
+        <CSSTransitionGroup
+          transitionName="example"
+          transitionEnterTimeout={500}
+          transitionLeaveTimeout={300}
+        >
+          <ul>
             {highScores.map(score => {
               return (
                 <li key={score._id} onClick={() => removeOneScore(score._id)}>
@@ -85,8 +123,8 @@ export default function GamePage(props) {
                 </li>
               );
             })}
-          </CSSTransitionGroup>
-        </ul>
+          </ul>
+        </CSSTransitionGroup>
       </div>
     </div>
   );

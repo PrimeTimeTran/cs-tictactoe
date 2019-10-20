@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 
+import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
 
 import Navbar from "./components/Navbar";
@@ -11,17 +12,16 @@ export default function App() {
 
   useEffect(() => {
     const currentUser = localStorage.getItem("fbLogin");
-    if (currentUser !== null) {
+    if (currentUser) {
       setCurrentUser(JSON.parse(currentUser));
     }
   }, []);
 
   const responseFacebook = response => {
-    console.log("response", response);
     try {
-      if (response) {
+    if (response) {
         localStorage.setItem("fbLogin", JSON.stringify(response));
-        setCurrentUser(JSON.stringify(response));
+        setCurrentUser(response);
       }
     } catch (error) {
       console.log("errorrrrrrr", error);
@@ -37,14 +37,12 @@ export default function App() {
     if (currentUser !== null) {
       return <GamePage onSignOut={onSignOut} currentUser={currentUser} />;
     }
-    return <SignInPage responseFacebook={responseFacebook} />;
+    return <SignInPage currentUser={currentUser} responseFacebook={responseFacebook} />;
   };
-
-  console.log("currentUser", currentUser);
 
   return (
     <div className="d-flex flex-column h-100">
-      <Navbar />
+      <Navbar currentUser={currentUser} onSignOut={onSignOut}/>
       <div className="container d-flex flex-column justify-content-center">
         {renderAppropriateScreen()}
       </div>

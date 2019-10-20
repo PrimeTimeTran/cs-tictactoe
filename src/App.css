@@ -6,8 +6,10 @@ body {
   font: 14px "Century Gothic", Futura, sans-serif;
 }
 
-ol, ul {
-  padding-left: 30px;
+ol,
+ul {
+  padding: 10px;
+  list-style: none;
 }
 
 .board-row:after {
@@ -26,13 +28,13 @@ ol, ul {
   float: left;
   font-size: 24px;
   font-weight: bold;
-  line-height: 34px;
-  height: 34px;
+  line-height: 75px;
+  height: 75px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  width: 75px;
 }
 
 .square:focus {
@@ -42,7 +44,6 @@ ol, ul {
 .kbd-navigation .square:focus {
   background: #ddd;
 }
-
 
 .example-enter {
   opacity: 0.01;
@@ -65,4 +66,17 @@ ol, ul {
 .container {
   height: 800px;
   background-color: red;
+}
+
+ul {
+  padding: 10px;
+  list-style: none;
+}
+
+.col-md-4 {
+  background-color: pink;
+}
+
+.col-md-8 {
+  background-color: green;
 }

@@ -8,7 +8,7 @@ export default function SignInPage(props) {
       <FacebookLogin
         fields="name,email,picture"
         callback={props.responseFacebook}
-        appId={process.env.REACT_APP_HELLO_WORLD}
+        appId={process.env.REACT_APP_FB_APP_ID}
       />
     </div>
   );
