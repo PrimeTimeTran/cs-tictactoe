@@ -8,7 +8,8 @@ import Board from "./Board";
 
 export default function GamePage(props) {
   const [xIsNext, setXIsNext] = useState(true);
-  const [stepNumber, setStepNumber] = useState(0);
+  const [sent, setSent] = useState(false);
+  const [stepNumber, setStepNumber] = ustate(0);
   const [highScores, setHighScores] = useState([]);
   const [history, setHistory] = useState([{ squares: Array(9).fill(null) }]);
 
@@ -25,6 +26,7 @@ export default function GamePage(props) {
   };
 
   const postGameScore = async () => {
+    console.log("p;osting score");
     let data = new URLSearchParams();
 
     data.append("player", props.currentUser.name || "Anonymous");
@@ -41,6 +43,10 @@ export default function GamePage(props) {
     };
     const response = await fetch(url, config);
     const gogo = await response.json();
+    if (gogo.success) {
+      fetchScores();
+      setSent(true);
+    }
   };
 
   const removeOneScore = id => {
@@ -84,8 +90,9 @@ export default function GamePage(props) {
   const winner = calculateWinner(current.squares);
 
   let status;
-  if (winner) {
+  if (winner && !sent) {
     status = "Winner: " + winner;
+    postGameScore();
   } else {
     status = "Next player: " + (xIsNext ? "X" : "O");
   }
@@ -94,11 +101,7 @@ export default function GamePage(props) {
     <div className="row">
       <div className="col-md-8">
         <h1>{props.currentUser.name}</h1>
-        <Board
-          squares={current.squares}
-          someoneWon={postGameScore}
-          handleClick={handleClick}
-        />
+        <Board squares={current.squares} handleClick={handleClick} />
       </div>
       <div className="col-md-4 h-90 d-flex flex-column">
         <div className="game-info">
